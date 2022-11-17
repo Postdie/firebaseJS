@@ -1,8 +1,9 @@
-import { saveTask, onGetTasks, deleteTask, getTask } from './firebase.js';
+import { saveTask, onGetTasks, deleteTask, getTask, updateTask } from './firebase.js';
 
 const formTask = document.querySelector('#task-form');
 const taskContainer = document.querySelector('#tasks-container');
 let editStatus = false;
+let idForEdit = '';
 
 window.addEventListener('DOMContentLoaded', async () => {
 
@@ -33,6 +34,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             formTask['task-title'].value = task.title;
             formTask['task-description'].value = task.description;
             editStatus = true;
+            idForEdit = id;
+            document.querySelector('#btn-task-save').innerText = 'Update';
         }
     })
 });
@@ -45,7 +48,11 @@ formTask.addEventListener('submit', (e) => {
     if(!editStatus){
         saveTask(title.value, description.value);   
     } else {
-        console.log('Editando');
+        updateTask(idForEdit, {
+            'title': title.value, 'description': description.value
+        });
+        editStatus = false;
+        document.querySelector('#btn-task-save').innerText = 'Save';
     }
 
     formTask.reset();

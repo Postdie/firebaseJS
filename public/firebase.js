@@ -1,7 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
 import { collection, getFirestore, addDoc, getDocs, 
-        onSnapshot, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js"
+        onSnapshot, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -20,6 +21,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore();
+const storage = getStorage(app);
 
 export const saveTask = (title, description) => addDoc(collection(db, 'tasks'), { title, description });
 
@@ -32,3 +34,23 @@ export const deleteTask = id => deleteDoc(doc(db, 'tasks', id));
 export const getTask = id => getDoc(doc(db, 'tasks', id));
 
 export const updateTask = (id, newFields) => updateDoc(doc(db, 'tasks', id), newFields);
+
+export const saveImage = file => {
+    const storageRef = ref(storage, `images/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on('state_changed', 
+    (snapshot) => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    },
+    (error) => {
+        // Handle unsuccessful uploads
+    }, 
+    () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        console.log('File available at', downloadURL);
+        });
+    }
+    );
+}

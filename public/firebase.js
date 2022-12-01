@@ -1,7 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-import { collection, getFirestore, addDoc, getDocs, 
-        onSnapshot, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+import {
+    collection, getFirestore, addDoc, getDocs,
+    onSnapshot, deleteDoc, doc, getDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -9,12 +11,12 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://w
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAChI4KwfWm5_EP9LDCWC1EFTVqP1h6PI8",
-    authDomain: "crud-firestore-js-2c124.firebaseapp.com",
-    projectId: "crud-firestore-js-2c124",
-    storageBucket: "crud-firestore-js-2c124.appspot.com",
-    messagingSenderId: "369861705410",
-    appId: "1:369861705410:web:eb484e8fe1b6d643a3055b"
+    apiKey: "AIzaSyCBgeQ9v2nxBTPZv_mhA0K2W6Rv8mv9TCs",
+    authDomain: "fir-javascript-crud-21ac3.firebaseapp.com",
+    projectId: "fir-javascript-crud-21ac3",
+    storageBucket: "fir-javascript-crud-21ac3.appspot.com",
+    messagingSenderId: "289856883504",
+    appId: "1:289856883504:web:a121661c3ef4fda5bbd6f5"
 };
 
 // Initialize Firebase
@@ -23,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore();
 const storage = getStorage(app);
 
-export const saveTask = (title, description) => addDoc(collection(db, 'tasks'), { title, description });
+export const saveTask = (title, description, imageName, imageURL) => addDoc(collection(db, 'tasks'), { title, description, imageName, imageURL });
 
 export const getTasks = () => getDocs(collection(db, 'tasks'));
 
@@ -39,18 +41,18 @@ export const saveImage = file => {
     const storageRef = ref(storage, `images/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on('state_changed', 
-    (snapshot) => {
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    console.log('Upload is ' + progress + '% done');
-    },
-    (error) => {
-        // Handle unsuccessful uploads
-    }, 
-    () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        console.log('File available at', downloadURL);
-        });
-    }
+    uploadTask.on('state_changed',
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            document.querySelector('#progress').value = progress;
+        },
+        (error) => {
+            // Handle unsuccessful uploads
+        },
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                document.querySelector('#image').src = downloadURL;
+            });
+        }
     );
 }

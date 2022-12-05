@@ -29,13 +29,13 @@ const saveSubmit = (e) => {
     e.preventDefault();
     const title = formTask['task-title'];
     const description = formTask['task-description'];
-    const imageName = formTask['file-taks'].value.split('\\')[2];
-    const imageURL = document.querySelector('#image').scroll;
+    const imageName = formTask['file-task'].value.split('\\')[2];
+    const imageURL = document.querySelector('#image').src;
 
     if (title.value.length > 3 && description.value.length > 3) {
         if (!editStatus) {
             console.log(formTask['file-task'].name);
-            saveTask(title.value, description.value, description.value, imageName, imageURL);
+            saveTask(title.value, description.value, imageName, imageURL);
         } else {
             updateTask(idForEdit, {
                 'title': title.value, 'description': description.value

@@ -4,7 +4,7 @@ import {
     collection, getFirestore, addDoc, getDocs,
     onSnapshot, deleteDoc, doc, getDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -31,7 +31,11 @@ export const getTasks = () => getDocs(collection(db, 'tasks'));
 
 export const onGetTasks = callback => onSnapshot(collection(db, 'tasks'), callback);
 
-export const deleteTask = id => deleteDoc(doc(db, 'tasks', id));
+export const deleteTask = async (id) => {
+    const docTask = await getTask(id);
+    deleteImageTask(docTask.data().imageName);
+    deleteDoc(doc(db, 'tasks', id));
+};
 
 export const getTask = id => getDoc(doc(db, 'tasks', id));
 
@@ -55,4 +59,13 @@ export const saveImage = file => {
             });
         }
     );
+}
+
+const deleteImageTask = imageName => {
+    const desertRef = ref(storage, `images/${imageName}`);
+    deleteObject(desertRef).then(() => {
+        console.log('imagen Eliminada');
+    }).catch((error) => {
+        console.log('ocurrio un error', error);
+    });
 }
